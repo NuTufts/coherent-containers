@@ -1,0 +1,16 @@
+FROM larbys/geant4:10.6.p03
+
+MAINTAINER taritree.wongjirad@tufts.edu
+
+# PRE-REQS
+RUN apt-get update -y && apt-get install -y libprotobuf-dev protobuf-compiler libzmq3-dev && apt-get clean -y
+
+# INSTALL RAT
+RUN cd /usr/local && git clone https://github.com/NuTufts/ratpac-coherent.git && \
+    cd /usr/local/ratpac-coherent && mkdir /usr/local/ratpac-coherent/build && \
+    cd /usr/local/ratpac-coherent/RAT/chroma && \
+    protoc --cpp_out=/usr/local/ratpac-coherent/RAT/chroma ratchromadata.proto photonHit.proto && \
+    cd /usr/local/ratpac-coherent/build/ && \
+    cmake -DROOT_DIR=/usr/local/root/root-6.22.06/cmake/ -DGeant4_DIR=/usr/local/geant/geant4.10.06.p03/lib/Geant4-10.6.3/ -DCMAKE_INSTALL_PREFIX=/usr/local/ratpac-coherent ../ && \
+    make install
+
